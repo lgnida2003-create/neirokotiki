@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Общение — Нейрокотики</title>
+  <style>body{background:#181f2a;color:#e0e0e0;font-family:'Segoe UI','Roboto',Arial,sans-serif;margin:0;padding:0;}h2{text-align:center;color:#00ffe7;margin-top:32px;} .chat-box{background:rgba(30,40,60,0.7);border-radius:14px;box-shadow:0 4px 16px 0 #00ffe7aa;border:1.5px solid #00ffe7;max-width:500px;margin:32px auto;padding:24px 18px 18px 18px;color:#b2fff7;text-align:center;} .chat-box textarea{width:100%;border-radius:8px;border:none;padding:10px;font-size:1rem;margin-top:12px;background:#1a2a3a;color:#e0e0e0;resize:vertical;box-shadow:0 2px 8px #00ffe733;} .chat-box button{background:#00ffe7;color:#1a2a3a;border:none;border-radius:8px;padding:8px 24px;font-size:1.1rem;font-weight:600;cursor:pointer;box-shadow:0 2px 8px #00ffe733;} #chat-messages{min-height:120px;margin-bottom:12px;text-align:left;background:rgba(0,255,231,0.07);border-radius:8px;padding:8px 10px 8px 10px;max-height:320px;overflow-y:auto;} .msg{display:flex;align-items:flex-start;gap:10px;margin:10px 0;} .msg .avatar{width:38px;height:38px;border-radius:50%;background:#222;flex-shrink:0;object-fit:cover;} .msg .bubble{background:rgba(0,255,231,0.13);border-radius:12px;padding:8px 14px;max-width:340px;box-shadow:0 2px 8px #00ffe733;} .msg .meta{font-size:0.85em;color:#7fffd4;margin-bottom:2px;} .msg .meta .nick{font-weight:bold;} .msg.me .bubble{background:rgba(0,255,231,0.25);border:2px solid #00ffe7;} .msg.me{flex-direction:row-reverse;}@media(max-width:600px){.chat-box{padding:12px 4px;}#chat-messages{max-width:98vw;}}
+
+#reply-bar {
+  background: rgba(0, 255, 231, 0.13);
+  padding: 6px 10px 6px 16px;
+  border-radius: 10px 16px 16px 10px;
+  margin-bottom: 6px;
+  color: #00ffe7;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92em;
+  border-left: 3px solid #00ffe7;
+  padding-left: 12px;
+}
+
+.reply-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reply-content img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.reply-content .text {
+  background: rgba(0, 255, 231, 0.09);
+  border-radius: 7px 12px 12px 7px;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+  color: #7fffd4;
+  flex-grow: 1;
+}
+
+.reply-content .close-btn {
+  background: none;
+  border: none;
+  color: #00ffe7;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+  margin-left: 10px;
+}
+
+.close-btn:hover {
+  color: #ff6f61;
+}
+
+  </style>
+</head>
+<body>
+  <h2>Общение</h2>
+  <div class="chat-box">
+    <p>Онлайн-чат нейрокотиков. Выберите ник и аватар, чтобы начать!</p>
+    <div style="display:flex;gap:16px;justify-content:center;margin-bottom:10px;">
+      <button id="tab-online" class="tab-btn" style="background:#00ffe7;color:#222;border:none;border-radius:8px 8px 0 0;padding:6px 18px;font-weight:bold;cursor:pointer;">Онлайн</button>
+      <button id="tab-friends" class="tab-btn" style="background:#222;color:#00ffe7;border:none;border-radius:8px 8px 0 0;padding:6px 18px;font-weight:bold;cursor:pointer;">Друзья</button>
+    </div>
+    <div id="online-users" style="display:flex;gap:10px;justify-content:center;margin-bottom:10px;"></div>
+    <div id="friends-list" style="display:none;gap:10px;justify-content:center;margin-bottom:10px;"></div>
+    <div style="margin-bottom:10px;">
+      <input id="nick" placeholder="Ваш ник" maxlength="16" style="width:120px;"> 
+      <input id="avatar" type="url" placeholder="URL аватара" style="width:180px;">
+      <button id="save-nick">OK</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+      <input type="file" id="file-input" accept="image/*" style="flex:1;">
+      <button id="send-file" title="Отправить картинку">📎</button>
+    </div>
+    <textarea id="chat-input" placeholder="Напишите сообщение..." rows="3"></textarea>
+    <button id="chat-send">Отправить</button>
+  </div>
+  <script>
+    // Генерация случайного ника и цвета
+    function randomNick() {
+      const names = ['Котик','Мурзик','Нейрокот','Кот-бот','Котяра','Котейка','Кот-арт','Кот-кибер','Кот-милаш','Кот-гуру'];
+      return names[Math.floor(Math.random()*names.length)] + Math.floor(Math.random()*1000);
+    }
+    function randomAvatar() {
+      const n = Math.floor(Math.random()*10)+1;
+      return `https://api.dicebear.com/7.x/pixel-art/svg?seed=cat${n}`;
+    }
+    function randomColor() {
+      // Яркие пастельные цвета
+      const colors = ['#00ffe7','#ffb300','#ff5eae','#7fffd4','#ff6f61','#7ec8e3','#b388ff','#ffb347','#b2ff59','#ff8a65'];
+      return colors[Math.floor(Math.random()*colors.length)];
+    }
+    let nick = localStorage.getItem('nick') || randomNick();
+    let avatar = localStorage.getItem('avatar') || randomAvatar();
+    let color = localStorage.getItem('color') || randomColor();
+    document.getElementById('nick').value = nick;
+    document.getElementById('avatar').value = avatar;
+    document.getElementById('save-nick').onclick = function() {
+      nick = document.getElementById('nick').value.trim() || randomNick();
+      avatar = document.getElementById('avatar').value.trim() || randomAvatar();
+      color = randomColor();
+      localStorage.setItem('nick', nick);
+      localStorage.setItem('avatar', avatar);
+      localStorage.setItem('color', color);
+    };
+    // Чат
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+    let ws;
+    let replyTo = null;
+    let myId = null;
+    let privateChats = {};
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, function(tag) {
+        const chars = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'};
+        return chars[tag] || tag;
+      });
+    }
+    function addMessage(msg, isMe) {
+      const div = document.createElement('div');
+      div.className = 'msg' + (isMe ? ' me' : '');
+      let content = msg.text;
+      if (msg.image) {
+        content = `<img src="${msg.image}" alt="image" style="max-width:220px;max-height:180px;border-radius:10px;display:block;margin-bottom:4px;">` + (msg.text||'');
+      }
+      let replyHtml = '';
+      if (msg.reply) {
+        replyHtml = `<div style="font-size:0.92em;background:rgba(0,255,231,0.09);border-left:3px solid #00ffe7;padding:4px 8px 4px 12px;margin-bottom:4px;border-radius:7px 12px 12px 7px;color:#7fffd4;">↪ <b>${escapeHTML(msg.reply.nick)}</b>: ${msg.reply.text ? msg.reply.text.replace(/<br>/g,' ') : '[картинка]'}</div>`;
+      }
+      div.innerHTML = `<img class="avatar" src="${escapeHTML(msg.avatar)}" alt="avatar"><div><div class="meta"><span class="nick" style="color:${escapeHTML(msg.color)}">${escapeHTML(msg.nick)}</span> <span style="font-size:0.8em;color:#aaa;">${msg.time}</span></div><div class="bubble">${replyHtml}${content}</div></div>`;
+      // Кнопка ответить
+      div.onclick = function(e) {
+        if (e.target.tagName === 'IMG' && e.target.className === 'avatar') return;
+        replyTo = {nick: msg.nick, text: msg.text, image: msg.image};
+        showReplyBar();
+      };
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    // reply bar
+    function showReplyBar() {
+      let bar = document.getElementById('reply-bar');
+      if (!replyTo) { if (bar) bar.remove(); return; }
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'reply-bar';
+        bar.style = 'background:rgba(0,255,231,0.13);padding:6px 10px 6px 16px;border-radius:10px 16px 16px 10px;margin-bottom:6px;color:#00ffe7;display:flex;align-items:center;gap:10px;';
+        chatInput.parentNode.insertBefore(bar, chatInput);
+      }
+      bar.innerHTML = `↪ <b>${escapeHTML(replyTo.nick)}</b>: ${replyTo.text ? replyTo.text.replace(/<br>/g,' ') : '[картинка]'} <button style='margin-left:10px;' onclick='replyTo=null;showReplyBar();event.stopPropagation();'>✕</button>`;
+    }
+    // отправка с reply
+    chatSend.onclick = function() {
+      const text = chatInput.value.trim();
+      if ((text || replyTo) && ws && ws.readyState === 1) {
+        const msg = {
+          nick,
+          avatar,
+          color,
+          text: escapeHTML(text).replace(/\n/g,'<br>'),
+          time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+          reply: replyTo ? {nick: replyTo.nick, text: replyTo.text, image: replyTo.image} : undefined
+        };
+        ws.send(JSON.stringify(msg));
+        chatInput.value = '';
+        chatInput.focus();
+        replyTo = null;
+        showReplyBar();
+      }
+    };
+    connectWS();
+    chatSend.onclick = function() {
+      const text = chatInput.value.trim();
+      if (text && ws && ws.readyState === 1) {
+        const msg = {
+          nick,
+          avatar,
+          color,
+          text: escapeHTML(text).replace(/\n/g,'<br>'),
+          time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+        };
+        ws.send(JSON.stringify(msg));
+        chatInput.value = '';
+        chatInput.focus();
+      }
+    };
+    chatInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        chatSend.click();
+      }
+    });
+    // Отправка файла
+    document.getElementById('send-file').onclick = function() {
+      const fileInput = document.getElementById('file-input');
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        if (!file.type.startsWith('image/')) return alert('Можно отправлять только изображения!');
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const msg = {
+            nick,
+            avatar,
+            color,
+            image: e.target.result,
+            text: '',
+            time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+          };
+          ws.send(JSON.stringify(msg));
+        };
+        reader.readAsDataURL(file);
+        fileInput.value = '';
+      }
+    };
+    // Уведомления о новых сообщениях
+    let windowActive = true;
+    let unreadCount = 0;
+    window.onfocus = () => { windowActive = true; unreadCount = 0; document.title = 'Общение — Нейрокотики'; };
+    window.onblur = () => { windowActive = false; };
+    function notifyNewMessage(msg) {
+      if (!windowActive) {
+        unreadCount++;
+        document.title = `(${unreadCount}) Новое сообщение!`;
+        if ("Notification" in window && Notification.permission === "granted") {
+          const text = msg.text ? msg.text.replace(/<br>/g,' ') : '[картинка]';
+          new Notification(msg.nick + ': ' + text, {icon: msg.avatar});
+        }
+      } else {
+        // Короткая подсветка
+        document.body.style.transition = 'background 0.2s';
+        document.body.style.background = '#00ffe71a';
+        setTimeout(()=>{document.body.style.background='';}, 180);
+      }
+    }
+    // Запросить разрешение на уведомления
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+    // Онлайн-юзеры
+    let friends = JSON.parse(localStorage.getItem('friends')||'[]');
+    function renderOnline(users) {
+      const el = document.getElementById('online-users');
+      el.innerHTML = users.map(u => `<span title="${escapeHTML(u.nick)}" style="display:inline-flex;align-items:center;gap:3px;cursor:pointer;position:relative;" onclick="startPrivate('${u.id}','${escapeHTML(u.nick)}')"><img src="${escapeHTML(u.avatar)}" style="width:28px;height:28px;border-radius:50%;border:2px solid ${escapeHTML(u.color)};background:#222;"> <span style="color:${escapeHTML(u.color)};font-size:0.95em;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHTML(u.nick)}</span><button onclick="event.stopPropagation();addFriend('${u.id}')" style='margin-left:4px;background:#00ffe7;color:#222;border:none;border-radius:6px;padding:2px 7px;font-size:0.9em;cursor:pointer;'>+</button></span>`).join(' ');
+    }
+    function renderFriends(users) {
+      const el = document.getElementById('friends-list');
+      el.innerHTML = users.filter(u=>friends.includes(u.id)).map(u => `<span title="${escapeHTML(u.nick)}" style="display:inline-flex;align-items:center;gap:3px;cursor:pointer;position:relative;" onclick="startPrivate('${u.id}','${escapeHTML(u.nick)}')"><img src="${escapeHTML(u.avatar)}" style="width:28px;height:28px;border-radius:50%;border:2px solid ${escapeHTML(u.color)};background:#222;"> <span style="color:${escapeHTML(u.color)};font-size:0.95em;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHTML(u.nick)}</span><button onclick="event.stopPropagation();removeFriend('${u.id}')" style='margin-left:4px;background:#ff5eae;color:#fff;border:none;border-radius:6px;padding:2px 7px;font-size:0.9em;cursor:pointer;'>−</button></span>`).join(' ') || '<span style="color:#888;">Нет друзей онлайн</span>';
+    }
+    window.addFriend = function(id) {
+      if (!friends.includes(id)) { friends.push(id); localStorage.setItem('friends', JSON.stringify(friends)); renderFriends(window._onlineUsers||[]); }
+    };
+    window.removeFriend = function(id) {
+      friends = friends.filter(f=>f!==id); localStorage.setItem('friends', JSON.stringify(friends)); renderFriends(window._onlineUsers||[]); };
+    // ...в ws.onmessage...
+      ws.onmessage = function(event) {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.yourId) { myId = data.yourId; }
+          else if (data.history) {
+            chatMessages.innerHTML = '';
+            data.history.forEach(msg => addMessage(msg, msg.nick === nick && msg.avatar === avatar));
+          } else if (data.online) {
+            renderOnline(data.online);
+            renderFriends(data.online);
+            window._onlineUsers = data.online;
+          } else {
+            if (data.private) {
+              showPrivateChat(data.nick, data.fromId || data.toId);
+              addPrivateMessage(data, data.nick === nick && data.avatar === avatar);
+            } else {
+              addMessage(data, data.nick === nick && data.avatar === avatar);
+              notifyNewMessage(data);
+            }
+          }
+        } catch(e) {}
+      };
+    // Переключение вкладок
+    document.getElementById('tab-online').onclick = function() {
+      document.getElementById('online-users').style.display = '';
+      document.getElementById('friends-list').style.display = 'none';
+      this.style.background = '#00ffe7'; this.style.color = '#222';
+      document.getElementById('tab-friends').style.background = '#222'; document.getElementById('tab-friends').style.color = '#00ffe7';
+    };
+    document.getElementById('tab-friends').onclick = function() {
+      document.getElementById('online-users').style.display = 'none';
+      document.getElementById('friends-list').style.display = '';
+      this.style.background = '#00ffe7'; this.style.color = '#222';
+      document.getElementById('tab-online').style.background = '#222'; document.getElementById('tab-online').style.color = '#00ffe7';
+    };
+  </script>
+</body>
+</html>

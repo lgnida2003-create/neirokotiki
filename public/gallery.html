@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Галерея — Нейрокотики</title>
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/gallery.js"></script>
+</head>
+<body>
+  <div class="header">
+    <a class="logo" href="/">Нейрокотики</a>
+    <nav class="nav">
+      <a href="/gallery.html" class="active">Галерея</a>
+      <a href="/comments.html">Общение</a>
+      <a href="/shop.html">Магазин</a>
+      <a href="/cart.html">Корзина</a>
+      <a href="/armansofas.html">Диваны от Армана</a>
+    </nav>
+  </div>
+  <section class="gallery-section">
+    <div class="gallery-title">Галерея</div>
+    <div class="gallery-filter" id="gallery-filter"></div>
+    <div class="gallery" id="gallery-list"></div>
+  </section>
+  <div class="lightbox" id="lightbox"><span class="lightbox-close" id="lightbox-close">×</span><img id="lightbox-img" src="" alt="art"></div>
+</body>
+</html>

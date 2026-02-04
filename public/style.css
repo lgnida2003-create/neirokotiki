@@ -1,0 +1,98 @@
+/* Общие стили для всех страниц */
+body {
+  margin:0;
+  font-family:'Inter',Arial,sans-serif;
+  min-height:100vh;
+  position:relative;
+  overflow-x:hidden;
+  background-color:#0b0f14;
+  background-image:
+    linear-gradient(180deg, rgba(11,15,20,0.55), rgba(2,6,23,0.6)),
+    url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=80'),
+    url('https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=1600&q=80'),
+    url('https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=1200&q=80');
+  background-size: cover, cover, cover, cover;
+  background-position: center center, left top, right bottom, center bottom;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-blend-mode: overlay, normal, normal, normal;
+}
+/* отключаем декоративные размытия (без размытия по запросу) */
+body::before, body::after { display: none; }
+.header { display:flex;align-items:center;justify-content:space-between;padding:24px 6vw 12px 6vw;background:rgba(20,30,40,0.7);backdrop-filter:blur(4px);position:sticky;top:0;z-index:10; }
+.header .logo { font-size:2.1rem;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#00ffe7 10%,#7f7fd5 90%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;transition:.2s; text-decoration:none; }
+.header .logo:hover { filter:brightness(1.2) drop-shadow(0 2px 8px #00ffe7cc); }
+.nav { display:flex;gap:32px; }
+.nav a { color:#00ffe7;text-decoration:none;font-weight:700;font-size:1.1rem;transition:.2s; cursor:pointer; }
+.nav a.active, .nav a:hover { color:#fff; }
+.gallery-section, .comments-section, .shop-section, .sofa-section { padding:48px 0 32px 0; }
+.gallery-title, .comments-title, .shop-title { font-size:2rem;font-weight:800;text-align:center;margin-bottom:24px; }
+.gallery-filter { display:flex;gap:18px;justify-content:center;margin-bottom:24px; }
+.gallery-filter button { background:#222;color:#00ffe7;border:none;padding:7px 18px;border-radius:8px;font-weight:600;cursor:pointer;transition:.2s; }
+.gallery-filter button.active, .gallery-filter button:hover { background:#00ffe7;color:#222; }
+.gallery { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;max-width:1200px;margin:0 auto; }
+.art-card {
+  background:rgba(30,40,60,0.18);
+  border-radius:18px;
+  box-shadow:0 4px 24px #00ffe71a;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.18s;
+  position:relative;
+  opacity:0;
+  transform:translateY(40px) scale(0.98);
+  animation:fadeInUp .6s both;
+}
+.art-card:hover {
+  transform:scale(1.03) rotate(-1deg);
+  box-shadow:0 8px 32px #00ffe7cc;
+  z-index:2;
+}
+.art-card img {
+  width:100%;height:220px;object-fit:cover;display:block;
+  transition:filter .3s;
+}
+.art-card:hover img { filter:brightness(1.08) saturate(1.2); }
+.art-desc {
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(0deg,#232526ee 80%,transparent 100%);
+  color:#00ffe7;font-size:1.08rem;font-weight:700;padding:14px 18px 10px 18px;
+  letter-spacing:0.5px;text-shadow:0 2px 8px #232526cc;
+  opacity:0.92;
+  pointer-events:none;
+}
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(40px) scale(0.98); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.lightbox { display:none;position:fixed;z-index:1000;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center; }
+.lightbox.active { display:flex; }
+.lightbox img { max-width:90vw;max-height:80vh;border-radius:18px;box-shadow:0 8px 32px #00ffe7cc; }
+.lightbox-close { position:absolute;top:40px;right:60px;font-size:2.5rem;color:#00ffe7;cursor:pointer; }
+.comments-list { background:rgba(30,40,60,0.18);border-radius:14px;padding:18px;min-height:80px;box-shadow:0 2px 8px #00ffe71a;margin-bottom:18px; }
+.comment { margin-bottom:14px; }
+.comment:last-child { margin-bottom:0; }
+.comment-nick { font-weight:700;color:#00ffe7;margin-right:8px; }
+.comment-text { color:#fff; }
+.comment-time { color:#7fffd4;font-size:0.9em;margin-left:8px; }
+.comment-form { display:flex;gap:10px; }
+.comment-form input, .comment-form textarea { border-radius:8px;border:none;padding:8px;font-size:1rem;background:#1a2a3a;color:#e0e0e0; }
+.comment-form textarea { resize:vertical;flex:1; }
+.comment-form button { background:#00ffe7;color:#222;border:none;border-radius:8px;padding:8px 24px;font-size:1.1rem;font-weight:600;cursor:pointer; }
+.shop-list { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;max-width:1000px;margin:0 auto; }
+.shop-card { background:rgba(30,40,60,0.18);border-radius:18px;box-shadow:0 4px 24px #00ffe71a;overflow:hidden;transition:.18s;position:relative; }
+.shop-card:hover { transform:scale(1.03) rotate(-1deg);box-shadow:0 8px 32px #00ffe7cc;z-index:2; }
+.shop-card img { width:100%;height:180px;object-fit:cover;display:block; }
+.shop-card .shop-title2 { font-size:1.1rem;font-weight:700;color:#00ffe7;padding:10px 12px 0 12px; }
+.shop-card .shop-price { color:#fff;font-size:1.2rem;font-weight:700;padding:0 12px 10px 12px; }
+.shop-card .shop-add { position:absolute;bottom:16px;right:16px;background:#00ffe7;color:#222;border:none;border-radius:8px;padding:7px 18px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px #00ffe733; }
+.drawer { position:fixed;right:0;top:0;width:340px;max-width:95vw;height:100vh;background:#232526;box-shadow:-4px 0 32px #00ffe7aa;z-index:2000;display:flex;flex-direction:column; }
+.drawer-header { font-size:1.3rem;font-weight:800;color:#00ffe7;padding:24px 24px 12px 24px;display:flex;justify-content:space-between;align-items:center; }
+.drawer-list { flex:1;overflow-y:auto;padding:0 24px; }
+.drawer-item { display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #3335; }
+.drawer-item:last-child { border-bottom:none; }
+.drawer-total { font-size:1.1rem;font-weight:700;color:#fff;padding:18px 24px; }
+.drawer-btn { background:#00ffe7;color:#222;border:none;border-radius:8px;padding:10px 24px;font-size:1.1rem;font-weight:700;margin:18px 24px;cursor:pointer; }
+.drawer-close { background:none;border:none;font-size:2rem;color:#00ffe7;cursor:pointer; }
+@media (max-width:1024px) { body { background-attachment: scroll; background-size: cover, 100% 60%, 100% 40%, 100% 30%; } }
+@media (max-width:700px) { .header{flex-direction:column;gap:10px;padding:18px 2vw 8px 2vw;} .gallery{gap:10px;} .shop-list{gap:10px;} .drawer{width:98vw;} }

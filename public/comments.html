@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Общение — Нейрокотики</title>
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/comments.js"></script>
+</head>
+<body>
+  <div class="header">
+    <a class="logo" href="/">Нейрокотики</a>
+    <nav class="nav">
+      <a href="/gallery.html">Галерея</a>
+      <a href="/comments.html" class="active">Общение</a>
+      <a href="/shop.html">Магазин</a>
+      <a href="/cart.html">Корзина</a>
+      <a href="/armansofas.html">Диваны от Армана</a>
+    </nav>
+  </div>
+  <section class="comments-section">
+    <div class="comments-title">Общение</div>
+    <div class="comments-list" id="comments-list"></div>
+    <form class="comment-form" id="comment-form">
+      <input id="comment-nick" placeholder="Ваш ник" maxlength="16" required style="width:120px;">
+      <textarea id="comment-text" placeholder="Ваше сообщение..." rows="2" required></textarea>
+      <button type="submit">Отправить</button>
+    </form>
+  </section>
+</body>
+</html>

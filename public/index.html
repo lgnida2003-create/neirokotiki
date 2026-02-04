@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Нейрокотики</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,700,900&display=swap">
+  <style>
+    body {
+      margin:0;
+      font-family:'Inter',Arial,sans-serif;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.45;
+      transition: opacity .3s;
+    }
+    body::before {
+      width: 600px; height: 600px;
+      left: -200px; top: -180px;
+      background: radial-gradient(circle at 30% 30%, #00ffe7 0%, #7f7fd5 80%, transparent 100%);
+    }
+    body::after {
+      width: 500px; height: 500px;
+      right: -180px; bottom: -120px;
+      background: radial-gradient(circle at 70% 70%, #ffb347 0%, #ffcc33 60%, transparent 100%);
+    }
+    .header { display:flex;align-items:center;justify-content:space-between;padding:24px 6vw 12px 6vw;background:rgba(20,30,40,0.7);backdrop-filter:blur(4px);position:sticky;top:0;z-index:10; }
+    .header .logo { font-size:2.1rem;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#00ffe7 10%,#7f7fd5 90%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;transition:.2s; }
+    .header .logo:hover { filter:brightness(1.2) drop-shadow(0 2px 8px #00ffe7cc); }
+    .nav { display:flex;gap:32px; }
+    .nav a { color:#00ffe7;text-decoration:none;font-weight:700;font-size:1.1rem;transition:.2s; cursor:pointer; }
+    .nav a.active, .nav a:hover { color:#fff; }
+    .tabs { display:flex;gap:18px;justify-content:center;margin:32px 0 0 0; }
+    .tab-btn { background:#222;color:#00ffe7;border:none;padding:7px 18px;border-radius:8px;font-weight:600;cursor:pointer;transition:.2s;font-size:1.1rem; }
+    .tab-btn.active, .tab-btn:hover { background:#00ffe7;color:#222; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .hero { display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 10vw 40px 10vw;text-align:center; }
+    .hero-title { font-size:2.8rem;font-weight:900;letter-spacing:2px;margin-bottom:18px; }
+    .hero-desc { font-size:1.3rem;color:#b2fff7;max-width:600px; }
+    .gallery-section, .comments-section, .shop-section { padding:48px 0 32px 0; }
+    .gallery-title, .comments-title, .shop-title { font-size:2rem;font-weight:800;text-align:center;margin-bottom:24px; }
+    .gallery-filter { display:flex;gap:18px;justify-content:center;margin-bottom:24px; }
+    .gallery-filter button { background:#222;color:#00ffe7;border:none;padding:7px 18px;border-radius:8px;font-weight:600;cursor:pointer;transition:.2s; }
+    .gallery-filter button.active, .gallery-filter button:hover { background:#00ffe7;color:#222; }
+    .gallery { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;max-width:1200px;margin:0 auto; }
+    .art-card {
+      background:rgba(30,40,60,0.18);
+      border-radius:18px;
+      box-shadow:0 4px 24px #00ffe71a;
+      overflow:hidden;
+      cursor:pointer;
+      transition:.18s;
+      position:relative;
+      opacity:0;
+      transform:translateY(40px) scale(0.98);
+      animation:fadeInUp .6s both;
+    }
+    .art-card:hover {
+      transform:scale(1.03) rotate(-1deg);
+      box-shadow:0 8px 32px #00ffe7cc;
+      z-index:2;
+    }
+    .art-card img {
+      width:100%;height:220px;object-fit:cover;display:block;
+      transition:filter .3s;
+    }
+    .art-card:hover img { filter:brightness(1.08) saturate(1.2); }
+    .art-desc {
+      position:absolute;bottom:0;left:0;right:0;
+      background:linear-gradient(0deg,#232526ee 80%,transparent 100%);
+      color:#00ffe7;font-size:1.08rem;font-weight:700;padding:14px 18px 10px 18px;
+      letter-spacing:0.5px;text-shadow:0 2px 8px #232526cc;
+      opacity:0.92;
+      pointer-events:none;
+    }
+    @keyframes fadeInUp {
+      from { opacity:0; transform:translateY(40px) scale(0.98); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+    .tab-content { display:none; opacity:0; transition:opacity .4s; }
+    .tab-content.active { display:block; opacity:1; animation:fadeTab .5s; }
+    @keyframes fadeTab { from{opacity:0;} to{opacity:1;} }
+    .lightbox { display:none;position:fixed;z-index:1000;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center; }
+    .lightbox.active { display:flex; }
+    .lightbox img { max-width:90vw;max-height:80vh;border-radius:18px;box-shadow:0 8px 32px #00ffe7cc; }
+    .lightbox-close { position:absolute;top:40px;right:60px;font-size:2.5rem;color:#00ffe7;cursor:pointer; }
+    .comments-list { background:rgba(30,40,60,0.18);border-radius:14px;padding:18px;min-height:80px;box-shadow:0 2px 8px #00ffe71a;margin-bottom:18px; }
+    .comment { margin-bottom:14px; }
+    .comment:last-child { margin-bottom:0; }
+    .comment-nick { font-weight:700;color:#00ffe7;margin-right:8px; }
+    .comment-text { color:#fff; }
+    .comment-time { color:#7fffd4;font-size:0.9em;margin-left:8px; }
+    .comment-form { display:flex;gap:10px; }
+    .comment-form input, .comment-form textarea { border-radius:8px;border:none;padding:8px;font-size:1rem;background:#1a2a3a;color:#e0e0e0; }
+    .comment-form textarea { resize:vertical;flex:1; }
+    .comment-form button { background:#00ffe7;color:#222;border:none;border-radius:8px;padding:8px 24px;font-size:1.1rem;font-weight:600;cursor:pointer; }
+    .shop-list { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;max-width:1000px;margin:0 auto; }
+    .shop-card { background:rgba(30,40,60,0.18);border-radius:18px;box-shadow:0 4px 24px #00ffe71a;overflow:hidden;transition:.18s;position:relative; }
+    .shop-card:hover { transform:scale(1.03) rotate(-1deg);box-shadow:0 8px 32px #00ffe7cc;z-index:2; }
+    .shop-card img { width:100%;height:180px;object-fit:cover;display:block; }
+    .shop-card .shop-title2 { font-size:1.1rem;font-weight:700;color:#00ffe7;padding:10px 12px 0 12px; }
+    .shop-card .shop-price { color:#fff;font-size:1.2rem;font-weight:700;padding:0 12px 10px 12px; }
+    .shop-card .shop-add { position:absolute;bottom:16px;right:16px;background:#00ffe7;color:#222;border:none;border-radius:8px;padding:7px 18px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px #00ffe733; }
+    .drawer { position:fixed;right:-400px;top:0;width:340px;max-width:95vw;height:100vh;background:#232526;box-shadow:-4px 0 32px #00ffe7aa;z-index:2000;transition:right .3s;display:flex;flex-direction:column; }
+    .drawer.open { right:0; }
+    .drawer-header { font-size:1.3rem;font-weight:800;color:#00ffe7;padding:24px 24px 12px 24px;display:flex;justify-content:space-between;align-items:center; }
+    .drawer-list { flex:1;overflow-y:auto;padding:0 24px; }
+    .drawer-item { display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #3335; }
+    .drawer-item:last-child { border-bottom:none; }
+    .drawer-total { font-size:1.1rem;font-weight:700;color:#fff;padding:18px 24px; }
+    .drawer-btn { background:#00ffe7;color:#222;border:none;border-radius:8px;padding:10px 24px;font-size:1.1rem;font-weight:700;margin:18px 24px;cursor:pointer; }
+    .drawer-close { background:none;border:none;font-size:2rem;color:#00ffe7;cursor:pointer; }
+    @media (max-width:700px) { .header{flex-direction:column;gap:10px;padding:18px 2vw 8px 2vw;} .hero{padding:30px 2vw 20px 2vw;} .gallery{gap:10px;} .shop-list{gap:10px;} .drawer{width:98vw;} }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a class="logo" id="main-logo" href="/">Нейрокотики</a>
+    <nav class="nav">
+      <a href="/gallery.html">Галерея</a>
+      <a href="/comments.html">Общение</a>
+      <a href="/shop.html">Магазин</a>
+      <a href="/cart.html">Корзина</a>
+      <a href="/armansofas.html">Диваны от Армана</a>
+    </nav>
+  </div>
+  
+  <section class="hero tab-content active" data-tab="main">
+    <div class="hero-title">Добро пожаловать в мир нейроарта!</div>
+    <div class="hero-desc">Галерея современных AI-артов, общение и магазин уникальных товаров. Откройте для себя искусство будущего!</div>
+  </section>
+  <section id="gallery" class="gallery-section tab-content" data-tab="gallery">
+    <div class="gallery-title">Галерея</div>
+    <div class="gallery-filter" id="gallery-filter"></div>
+    <div class="gallery" id="gallery-list"></div>
+  </section>
+  <div class="lightbox" id="lightbox"><span class="lightbox-close" id="lightbox-close">×</span><img id="lightbox-img" src="" alt="art"></div>
+  <section id="comments" class="comments-section tab-content" data-tab="comments">
+    <div class="comments-title">Общение</div>
+    <div class="comments-list" id="comments-list"></div>
+    <form class="comment-form" id="comment-form">
+      <input id="comment-nick" placeholder="Ваш ник" maxlength="16" required style="width:120px;">
+      <textarea id="comment-text" placeholder="Ваше сообщение..." rows="2" required></textarea>
+      <button type="submit">Отправить</button>
+    </form>
+  </section>
+  <section id="shop" class="shop-section tab-content" data-tab="shop">
+    <div class="shop-title">Магазин</div>
+    <div class="shop-list" id="shop-list"></div>
+  </section>
+  <div class="drawer tab-content" id="drawer" data-tab="cart">
+    <div class="drawer-header">Корзина <button class="drawer-close" id="drawer-close">×</button></div>
+    <div class="drawer-list" id="drawer-list"></div>
+    <div class="drawer-total" id="drawer-total"></div>
+    <button class="drawer-btn" id="drawer-order">Оформить заказ</button>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
